@@ -1,13 +1,8 @@
 let proxyObj = {};
 
-proxyObj['/ws'] = {
-    ws: true,
-    target: "ws://localhost:8090"
-};
-
-proxyObj['/'] = {
+proxyObj['/vhr'] = {
     ws: false,
-    target: 'http://localhost:8090',
+    target: 'http://localhost:8090', //代理转发地址
     changeOrigin: true,
     pathRewrite: {
         '^/': ''

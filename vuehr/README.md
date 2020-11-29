@@ -1,20 +1,5 @@
-# vuehr
-Vuex：Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式
+菜单项数据加载成功之后，在前端有几个可以存放的地方：
 
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+1. sessionStorage
+2. localStorage 
+3. vuex状态管理

@@ -1,12 +1,14 @@
 import axios from 'axios'
 import {Message} from 'element-ui';
 
-// 响应拦截
+/* 使用axios响应拦截器拦截响应数据 */
 axios.interceptors.response.use(success => {
+    /* 业务错误：http的status是200，而服务端返回的data.status是500 */
     if (success.status && success.status == 200 && success.data.status == 500) {
-        Message.error({message: success.data.msg});
+        Message.error({message: success.data.msg})
         return;
     }
+    /* 登录成功后提示 */
     if (success.data.msg) {
         Message.success({message: success.data.msg})
     }
@@ -17,7 +19,7 @@ axios.interceptors.response.use(success => {
     } else if (error.response.status == 403) {
         Message.error({message: '权限不足，请联系管理员'})
     } else if (error.response.status == 401) {
-        Message.error({message: '尚未登录，请登录'});
+        Message.error({message: '尚未登录，请登录'})
         router.replace('/');
     } else {
         if (error.response.data.msg) {
@@ -27,11 +29,12 @@ axios.interceptors.response.use(success => {
         }
     }
     return;
-});
+})
 
+/* 请求的统一前缀 */
+let base = 'vhr';
 
-let base = '';
-
+/* security登录默认key value，不支持json */
 export const postKeyValueRequest = (url, params) => {
     return axios({
         method: 'post',
@@ -48,7 +51,7 @@ export const postKeyValueRequest = (url, params) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
-};
+}
 
 export const postRequest = (url, params) => {
     return axios({
@@ -56,7 +59,7 @@ export const postRequest = (url, params) => {
         url: `${base}${url}`,
         data: params
     })
-};
+}
 
 export const putRequest = (url, params) => {
     return axios({
@@ -64,7 +67,7 @@ export const putRequest = (url, params) => {
         url: `${base}${url}`,
         data: params
     })
-};
+}
 
 export const getRequest = (url, params) => {
     return axios({
@@ -72,7 +75,7 @@ export const getRequest = (url, params) => {
         url: `${base}${url}`,
         data: params
     })
-};
+}
 
 export const deleteRequest = (url, params) => {
     return axios({
@@ -80,4 +83,4 @@ export const deleteRequest = (url, params) => {
         url: `${base}${url}`,
         data: params
     })
-};
+}

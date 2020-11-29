@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaboy.vhr.dao.MenuDao">
+
+    <resultMap type="com.javaboy.vhr.entity.Menu" id="MenuMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="path" column="path" jdbcType="VARCHAR"/>
+        <result property="component" column="component" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="iconCls" column="icon_cls" jdbcType="VARCHAR"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="enabled" column="enabled" jdbcType="BOOLEAN"/>
+        <result column="keep_alive2" property="keepAlive" jdbcType="BOOLEAN"/>
+        <result column="require_auth2" property="requireAuth" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <select id="getMenusByHrId" resultMap="Menus2">
+        select distinct
+                m1.*,
+                m2.id as id2,
+                m2.component as component2,
+                m2.enabled as enabled2,
+                m2.icon_cls as icon_cls2,
+                m2.keep_alive as keep_alive2,
+                m2.name as name2,
+                m2.parent_id as parent_id2,
+                m2.require_auth as require_auth2,
+                m2.path as path2
+        from
+                menu m1,menu m2,hr_role hrr,menu_role mr
+        where
+                m1.id = m2.parent_id
+            and hrr.hrid = #{hrId}
+            and hrr.rid = mr.rid
+            and mr.mid = m2.id
+            and m2.enabled = true
+        order by m1.id,m2.id
+    </select>
+    <resultMap id="Menus2" type="com.javaboy.vhr.entity.Menu" extends="MenuMap">
+        <collection property="children" ofType="com.javaboy.vhr.entity.Menu">
+            <result property="id" column="id2" jdbcType="INTEGER"/>
+            <result property="url" column="url2" jdbcType="VARCHAR"/>
+            <result property="path" column="path2" jdbcType="VARCHAR"/>
+            <result property="component" column="component2" jdbcType="VARCHAR"/>
+            <result property="name" column="name2" jdbcType="VARCHAR"/>
+            <result property="iconCls" column="icon_cls2" jdbcType="VARCHAR"/>
+            <result property="parentId" column="parent_id2" jdbcType="INTEGER"/>
+            <result property="enabled" column="enabled2" jdbcType="BOOLEAN"/>
+            <result column="keep_alive2" property="keepAlive" jdbcType="BOOLEAN"/>
+            <result column="require_auth2" property="requireAuth" jdbcType="BOOLEAN"/>
+        </collection>
+    </resultMap>
+
+    <!-- 根据菜单 id 查询下级菜单 -->
+    <select id="selectMenusById" resultMap="MenusMap">
+        select
+            id, url, path, component, name, icon_cls, keep_alive, require_auth, parent_id, enabled
+        from
+            vhr.menu
+        where
+            parent_id = #{id}
+    </select>
+    <resultMap type="com.javaboy.vhr.entity.Menu" id="MenusMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="path" column="path" jdbcType="VARCHAR"/>
+        <result property="component" column="component" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="iconCls" column="icon_cls" jdbcType="VARCHAR"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="enabled" column="enabled" jdbcType="BOOLEAN"/>
+        <result column="keep_alive2" property="keepAlive" jdbcType="BOOLEAN"/>
+        <result column="require_auth2" property="requireAuth" jdbcType="BOOLEAN"/>
+        <collection property="children" column="id" select="selectMenusById" ofType="com.javaboy.vhr.entity.Menu">
+        </collection>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MenuMap">
+        select
+          id, url, path, component, name, iconCls, keepAlive, requireAuth, parentId, enabled
+        from vhr.menu
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MenuMap">
+        select
+          id, url, path, component, name, iconCls, keepAlive, requireAuth, parentId, enabled
+        from vhr.menu
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="MenuMap">
+        select
+        id, url, path, component, name, icon_cls, keep_alive, require_auth, parent_id, enabled
+        from vhr.menu
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="url != null and url != ''">
+                and url = #{url}
+            </if>
+            <if test="path != null and path != ''">
+                and path = #{path}
+            </if>
+            <if test="component != null and component != ''">
+                and component = #{component}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="iconCls != null and iconCls != ''">
+                and icon_cls = #{iconCls}
+            </if>
+            <if test="keepAlive != null">
+                and keep_alive = #{keepAlive}
+            </if>
+            <if test="requireAuth != null">
+                and require_auth = #{requireAuth}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="enabled != null">
+                and enabled = #{enabled}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.menu(url, path, component, name, icon_cls, keep_alive, require_auth, parent_id, enabled)
+        values (#{url}, #{path}, #{component}, #{name}, #{iconCls}, #{keepAlive}, #{requireAuth}, #{parentId}, #{enabled})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.menu
+        <set>
+            <if test="url != null and url != ''">
+                url = #{url},
+            </if>
+            <if test="path != null and path != ''">
+                path = #{path},
+            </if>
+            <if test="component != null and component != ''">
+                component = #{component},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="iconCls != null and iconCls != ''">
+                icon_cls = #{iconCls},
+            </if>
+            <if test="keepAlive != null">
+                keep_alive = #{keepAlive},
+            </if>
+            <if test="requireAuth != null">
+                require_auth = #{requireAuth},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from vhr.menu where id = #{id}
+    </delete>
+
+</mapper>

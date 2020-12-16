@@ -11,20 +11,23 @@ spring:
     name: vhr
   # 数据源配置
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/vhr?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/vhr?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&serverTimezone=UTC
     data-username: root
     data-password: root
     druid:
-      # 初始化大小，最小，最大
+      # 初始化时建立物理连接的个数，
       initial-size: 5
+      # 最小连接池数量
       min-idle: 5
+      # 最大连接池数量
       max-active: 20
-      # 配置获取连接等待超时的时间
+      # 获取连接时最大等待时间，单位毫秒
       max-wait: 60000
-      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位毫秒
       time-between-eviction-runs-millis: 60000
-      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      # 配置一个连接在池中最小生存的时间，单位毫秒
       min-evictable-idle-time-millis: 300000
       validation-query: SELECT 1 FROM DUAL
       # 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
@@ -33,11 +36,11 @@ spring:
       test-on-borrow: false
       # 归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
       test-on-return: false
-      # 打开PSCache，并且指定每个连接上PSCache的大小. 是否缓存preparedStatement,mysql5.5+建议开启
+      # 是否缓存preparedStatement，也就是PSCache,PSCache对支持游标的数据库性能提升巨大，比如说oracle,在mysql下建议关闭。mysql5.5+建议开启
       pool-prepared-statements: true
       # 当值大于0时poolPreparedStatements会自动修改为true
       max-pool-prepared-statement-per-connection-size: 20
-      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      # 通过别名的方式配置扩展插件: stat:监控统计,wall:防sql注入,log4j:日志
       filters: stat,wall,slf4j
       # 合并多个DruidDataSource的监控数据
       use-global-data-source-stat: true

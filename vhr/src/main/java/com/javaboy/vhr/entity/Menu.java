@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * (Menu)实体类
@@ -53,5 +54,9 @@ public class Menu implements Serializable {
      * 是否启用
      */
     private Boolean enabled;
+
+    private List<Menu> children;
+
+    private List<Role> roles;
 
 }
